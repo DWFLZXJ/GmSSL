@@ -149,27 +149,39 @@ static int hexequbin(const char *hex, const unsigned char *bin, size_t binlen)
 	return ret;
 }
 
+
+
 static int sm9test_sign(const char *id, const unsigned char *msg, size_t msglen,
 	int use_test_vector)
 {
 	int ret = 0;
+	/* 公钥参数 */
 	SM9PublicParameters *mpk = NULL;
+	/* 主密钥参数 */
 	SM9MasterSecret *msk = NULL;
+	/* 私钥参数 */
 	SM9PrivateKey *sk = NULL;
+
 	unsigned char sig[256];
 	size_t siglen = sizeof(sig);
 	/* test vector */
+	/* 签名主私钥，由KGC通过随机数发生器产生 */
 	char *ks =	"0130E78459D78545CB54C587E02CF480CE0B66340F319F348A1D5B1F2DC5F4";
+	/* 签名主公钥，由签名主私钥结合系统参数产生 */
 	char *Ppubs =	"04"
 			"9F64080B3084F733E48AFF4B41B565011CE0711C5E392CFB0AB1B6791B94C408"
 			"29DBA116152D1F786CE843ED24A3B573414D2177386A92DD8F14D65696EA5E32"
 			"69850938ABEA0112B57329F447E3A0CBAD3E2FDB1A77F335E89E1408D0EF1C25"
 			"41E00A53DDA532DA1A7CE027B7A46F741006E85F5CDFF0730E75C05FB4E3216D";
+	/* A的唯一标识,也是签名公钥 */
 	char *ID_A =	"Alice";
+	/* 用户A的签名私钥 */
 	char *dsA =	"04"
 			"A5702F05CF1315305E2D6EB64B0DEB923DB1A0BCF0CAFF90523AC8754AA69820"
 			"78559A844411F9825C109F5EE3F52D720DD01785392A727BB1556952B2B013D3";
+	/* 明文信息 */
 	char *M =	"Chinese IBS standard";
+	/* 随机数 */
 	char *r =	"033C8616B06704813203DFD00965022ED15975C662337AED648835DC4B1CBE";
 	char *h =	"823C4B21E4BD2DFE1ED92C606653E996668563152FC33F55D7BFBB9BD9705ADB";
 	/*
@@ -188,7 +200,7 @@ static int sm9test_sign(const char *id, const unsigned char *msg, size_t msglen,
 		/* generate master secret with test vector */
 		change_rand(ks);
 	}
-
+	/*1、第一步永远是setup，为了生成主密钥，公共参数这些*/
 	if (!SM9_setup(NID_sm9bn256v1, NID_sm9sign, NID_sm9hash1_with_sm3, &mpk, &msk)) {
 		ERR_print_errors_fp(stderr);
 		goto end;
@@ -214,6 +226,7 @@ static int sm9test_sign(const char *id, const unsigned char *msg, size_t msglen,
 	}
 
 	/* generate private key */
+	/*由KGC通过签名主私钥和签名者的标识结合产生*/
 	if (!(sk = SM9_extract_private_key(msk, id, strlen(id)))) {
 		ERR_print_errors_fp(stderr);
 		goto end;

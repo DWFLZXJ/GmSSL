@@ -199,6 +199,73 @@ JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_deriveKey
 JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getErrorStrings
   (JNIEnv *, jobject);
 
+/*ÐÂÔöÄÚÈÝ---daiwf*/
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    generatePrivateKey
+ * Signature: ()[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_generatePrivateKey
+(JNIEnv*, jobject);
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    getPublicKey
+ * Signature: ([B)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_getPublicKey
+(JNIEnv*, jobject, jbyteArray);
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    generatePEMPriKey
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_generatePEMPriKey
+(JNIEnv*, jobject, jstring, jstring);
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    getPEMPubKey
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getPEMPubKey
+(JNIEnv*, jobject, jstring, jstring);
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    transPriPemToByteArr
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_transPriPemToByteArr
+(JNIEnv*, jobject, jstring, jstring);
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    transPubPemToByteArr
+ * Signature: (Ljava/lang/String;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_transPubPemToByteArr
+(JNIEnv*, jobject, jstring);
+
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    setupSM9
+ * Signature: ()[Ljava/lang/String;
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_setupSM9
+(JNIEnv*, jobject);
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    getPEMSM9MasterKey
+ * Signature: (Ljava/lang/String;)[B
+ */
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getPEMSM9MasterKey
+(JNIEnv*, jobject, jstring);
+
+
 #ifdef __cplusplus
 }
 #endif

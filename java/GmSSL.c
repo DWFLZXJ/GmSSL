@@ -68,7 +68,9 @@
 #include "gmssl_err.h"
 #include "gmssl_err.c"
 #include "GmSSL.h"
-
+#include <openssl/pem.h>
+#include <openssl/sm9.h>
+# include "../crypto/sm9/sm9_lcl.h"
 #define GMSSL_JNI_VERSION	"GmSSL-JNI API/1.1 2017-09-01"
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
@@ -105,8 +107,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getVersions(JNIEnv *env, job
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_generateRandom(
-	JNIEnv *env, jobject this, jint outlen)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_generateRandom(JNIEnv *env, jobject this, jint outlen)
 {
 	jbyteArray ret = NULL;
 	jbyte *outbuf = NULL;
@@ -137,8 +138,7 @@ end:
 	return ret;
 }
 
-static void list_cipher_fn(const EVP_CIPHER *c,
-	const char *from, const char *to, void *argv)
+static void list_cipher_fn(const EVP_CIPHER *c,const char *from, const char *to, void *argv)
 {
 	STACK_OF(OPENSSL_CSTRING) *sk = argv;
 	if (c) {
@@ -148,8 +148,7 @@ static void list_cipher_fn(const EVP_CIPHER *c,
 	}
 }
 
-JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getCiphers(
-	JNIEnv *env, jobject this)
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getCiphers(JNIEnv *env, jobject this)
 {
 	jobjectArray ret = NULL;
 	STACK_OF(OPENSSL_CSTRING) *sk = NULL;
@@ -180,8 +179,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getCipherIVLength(
-	JNIEnv *env, jobject this, jstring algor)
+JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getCipherIVLength(JNIEnv *env, jobject this, jstring algor)
 {
 	jint ret = -1;
 	const char *alg = NULL;
@@ -204,8 +202,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getCipherKeyLength(
-	JNIEnv *env, jobject this, jstring algor)
+JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getCipherKeyLength(JNIEnv *env, jobject this, jstring algor)
 {
 	jint ret = -1;
 	const char *alg = NULL;
@@ -228,8 +225,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getCipherBlockSize(
-	JNIEnv *env, jobject this, jstring algor)
+JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getCipherBlockSize(JNIEnv *env, jobject this, jstring algor)
 {
 	jint ret = -1;
 	const char *alg = NULL;
@@ -252,9 +248,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_symmetricEncrypt(
-	JNIEnv *env, jobject this, jstring algor,
-	jbyteArray in, jbyteArray key, jbyteArray iv)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_symmetricEncrypt(JNIEnv *env, jobject this, jstring algor,jbyteArray in, jbyteArray key, jbyteArray iv)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -341,9 +335,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_symmetricDecrypt(
-	JNIEnv *env, jobject this, jstring algor,
-	jbyteArray in, jbyteArray key, jbyteArray iv)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_symmetricDecrypt(JNIEnv *env, jobject this, jstring algor,jbyteArray in, jbyteArray key, jbyteArray iv)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -428,8 +420,7 @@ end:
 	return ret;
 }
 
-static void list_md_fn(const EVP_MD *md,
-	const char *from, const char *to, void *argv)
+static void list_md_fn(const EVP_MD *md,const char *from, const char *to, void *argv)
 {
 	STACK_OF(OPENSSL_CSTRING) *sk = argv;
 	if (md) {
@@ -439,8 +430,7 @@ static void list_md_fn(const EVP_MD *md,
 	}
 }
 
-JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getDigests(
-	JNIEnv *env, jobject this)
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getDigests(JNIEnv *env, jobject this)
 {
 	jobjectArray ret = NULL;
 	STACK_OF(OPENSSL_CSTRING) *sk = NULL;
@@ -471,8 +461,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getDigestLength(
-	JNIEnv *env, jobject this, jstring algor)
+JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getDigestLength(JNIEnv *env, jobject this, jstring algor)
 {
 	jint ret = -1;
 	const char *alg = NULL;
@@ -495,8 +484,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getDigestBlockSize(
-	JNIEnv *env, jobject this, jstring algor)
+JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_getDigestBlockSize(JNIEnv *env, jobject this, jstring algor)
 {
 	jint ret = -1;
 	const char *alg = NULL;
@@ -519,8 +507,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_digest(JNIEnv *env, jobject this,
-	jstring algor, jbyteArray in)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_digest(JNIEnv *env, jobject this,jstring algor, jbyteArray in)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -573,8 +560,7 @@ char *mac_algors[] = {
 	"HMAC-SHA512",
 };
 
-JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getMacs(
-	JNIEnv *env, jobject this)
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getMacs(JNIEnv *env, jobject this)
 {
 	jobjectArray ret = NULL;
 	int i;
@@ -595,8 +581,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getMacs(
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_mac(JNIEnv *env, jobject this,
-	jstring algor, jbyteArray in, jbyteArray key)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_mac(JNIEnv *env, jobject this,jstring algor, jbyteArray in, jbyteArray key)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -714,8 +699,7 @@ int sign_nids[] = {
 #endif
 };
 
-static int get_sign_info(const char *alg, int *ppkey_type,
-	const EVP_MD **pmd, int *pec_scheme)
+static int get_sign_info(const char *alg, int *ppkey_type,const EVP_MD **pmd, int *pec_scheme)
 {
 	int pkey_type;
 	const EVP_MD *md = NULL;
@@ -780,8 +764,7 @@ static int get_sign_info(const char *alg, int *ppkey_type,
 	return 1;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getSignAlgorithms(
-	JNIEnv *env, jobject this)
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getSignAlgorithms(JNIEnv *env, jobject this)
 {
 	jobjectArray ret = NULL;
 	int num_algors = sizeof(sign_nids)/sizeof(sign_nids[0]);
@@ -803,8 +786,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getSignAlgorithms(
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_sign(JNIEnv *env, jobject this,
-	jstring algor, jbyteArray in, jbyteArray key)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_sign(JNIEnv *env, jobject this, jstring algor, jbyteArray in, jbyteArray key)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -904,8 +886,7 @@ end:
 	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_verify(JNIEnv *env, jobject this,
-	jstring algor, jbyteArray in, jbyteArray sig, jbyteArray key)
+JNIEXPORT jint JNICALL Java_org_gmssl_GmSSL_verify(JNIEnv *env, jobject this,jstring algor, jbyteArray in, jbyteArray sig, jbyteArray key)
 {
 	jint ret = 0;
 	const char *alg = NULL;
@@ -1050,8 +1031,7 @@ int pke_nids[] = {
 #endif
 };
 
-static int get_pke_info(const char *alg, int *ppkey_type,
-	int *pec_scheme, int *pec_encrypt_param)
+static int get_pke_info(const char *alg, int *ppkey_type,int *pec_scheme, int *pec_encrypt_param)
 {
 	int pkey_type = 0;
 	int ec_scheme = 0;
@@ -1125,8 +1105,7 @@ static int get_pke_info(const char *alg, int *ppkey_type,
 	return 1;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getPublicKeyEncryptions(
-	JNIEnv *env, jobject this)
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getPublicKeyEncryptions(JNIEnv *env, jobject this)
 {
 	jobjectArray ret = NULL;
 	int i;
@@ -1147,9 +1126,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getPublicKeyEncryptions(
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_publicKeyEncrypt(
-	JNIEnv *env, jobject this, jstring algor,
-	jbyteArray in, jbyteArray key)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_publicKeyEncrypt(JNIEnv *env, jobject this, jstring algor,jbyteArray in, jbyteArray key)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -1263,9 +1240,7 @@ static int gmssl_pkey_encrypt(const char *algor, const unsigned char *in, size_t
 }
 */
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_publicKeyDecrypt(
-	JNIEnv *env, jobject this, jstring algor,
-	jbyteArray in, jbyteArray key)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_publicKeyDecrypt(JNIEnv *env, jobject this, jstring algor,jbyteArray in, jbyteArray key)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -1384,9 +1359,7 @@ int exch_nids[] = {
 #endif
 };
 
-static int get_exch_info(const char *alg, int *ppkey_type, int *pec_scheme,
-	int *pecdh_cofactor_mode, int *pecdh_kdf_type, int *pecdh_kdf_md,
-	int *pecdh_kdf_outlen, char **pecdh_kdf_ukm, int *pecdh_kdf_ukmlen)
+static int get_exch_info(const char *alg, int *ppkey_type, int *pec_scheme,int *pecdh_cofactor_mode, int *pecdh_kdf_type, int *pecdh_kdf_md,int *pecdh_kdf_outlen, char **pecdh_kdf_ukm, int *pecdh_kdf_ukmlen)
 {
 	int pkey_type = 0;
 	int ec_scheme = 0;
@@ -1488,8 +1461,7 @@ static int get_exch_info(const char *alg, int *ppkey_type, int *pec_scheme,
 	return 1;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getDeriveKeyAlgorithms(
-	JNIEnv *env, jobject this)
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getDeriveKeyAlgorithms(JNIEnv *env, jobject this)
 {
 	jobjectArray ret = NULL;
 	int i;
@@ -1510,9 +1482,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getDeriveKeyAlgorithms(
 	return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_deriveKey(
-	JNIEnv *env, jobject this, jstring algor,
-	jint outkeylen, jbyteArray peerkey, jbyteArray key)
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_deriveKey(JNIEnv *env, jobject this, jstring algor,jint outkeylen, jbyteArray peerkey, jbyteArray key)
 {
 	jbyteArray ret = NULL;
 	const char *alg = NULL;
@@ -1698,5 +1668,435 @@ JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getErrorStrings(JNIEnv *env,
 
 end:
 	sk_OPENSSL_STRING_pop_free(sk, free_errstr);
+	return ret;
+}
+
+/*从这里开始是新增的代码---daiwf*/
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_generatePrivateKey(JNIEnv *env, jobject this) {
+
+jbyteArray ret = NULL;
+unsigned char *outbuf = NULL;
+EVP_PKEY_CTX *pctx = NULL, *kctx = NULL;
+EVP_PKEY *params = NULL, *key =NULL;
+
+if (!(pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL))) {
+	printf("EVP_PKEY_CTX_new_id() error\n");
+	goto end;
+}
+
+if (EVP_PKEY_paramgen_init(pctx)!=1) {
+	printf("EVP_PKEY_paramgen_init() error\n");
+	goto end;
+}
+
+if (!EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_sm2p256v1)) {
+	printf("EVP_PKEY_CTX_set_ec_paramgen_curve_nid error\n");
+	goto end;
+}
+
+if (!EVP_PKEY_paramgen(pctx,&params)) {
+	printf("paramgen error\n");
+	goto end;
+}
+
+if (!(kctx = EVP_PKEY_CTX_new(params,NULL))) {
+	printf("ctx_new error\n");
+	goto end;
+}
+
+if ((EVP_PKEY_keygen_init(kctx))!=1) {
+	printf("EVP_PKEY_kengen_init() error\n");
+	goto end;
+}
+
+if (EVP_PKEY_keygen(kctx, &key) <=0) {
+	printf("EVP_PKEY_keygen error\n");
+	goto end;
+}
+
+BIO *bio = BIO_new(BIO_s_mem());
+
+if (1 != i2d_PrivateKey_bio(bio,key)) {
+	printf("i2d_PrivateKey_bio() error\n");
+	goto end;
+}
+
+int outlen = BIO_get_mem_data(bio, &outbuf);
+
+if (!(ret = (*env)->NewByteArray(env, outlen))) {
+	printf("return jbyteArray error\n");
+	goto end;
+}
+
+(*env)->SetByteArrayRegion(env, ret, 0, outlen, (jbyte *) outbuf);
+
+end:
+if(pctx) EVP_PKEY_CTX_free(pctx);
+if(kctx) EVP_PKEY_CTX_free(kctx);
+if(params) EVP_PKEY_free(params);
+if(key) EVP_PKEY_free(key);
+if(bio) BIO_free(bio);
+return ret;
+
+}
+
+
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_getPublicKey(JNIEnv *env, jobject this, jbyteArray privateKey) {
+
+jbyteArray ret = NULL;
+unsigned char *outbuf = NULL;
+const unsigned char *keybuf = NULL;
+int keylen;
+EVP_PKEY *pkey = NULL;
+
+if (!(keybuf = (unsigned char*)(*env)->GetByteArrayElements(env, privateKey, 0))) {
+    printf("GetByteArrayElements error\n");
+    goto end;
+}
+
+if ((keylen = (*env)->GetArrayLength(env, privateKey)) <= 0) {
+    printf("GetArrayLength error\n");
+    goto end;
+}
+
+if (!(pkey = d2i_PrivateKey(EVP_PKEY_EC, NULL, &keybuf, (long)keylen))) {
+    printf("d2i_PrivateKey error\n");
+    goto end;
+}
+
+int outlen;
+if (!(outlen=i2d_PUBKEY(pkey,&outbuf))) {
+    printf("EVP_PKEY_print_public error\n");
+    goto end;
+}
+
+if (!(ret = (*env)->NewByteArray(env, outlen))) {
+    printf("return jbyteArray error\n");
+    goto end;
+}
+
+(*env)->SetByteArrayRegion(env, ret, 0, outlen, (jbyte *) outbuf);
+
+end:
+if (keybuf)
+if (pkey) EVP_PKEY_free(pkey);
+return ret;
+
+}
+
+
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_generatePEMPriKey(JNIEnv *env, jobject this, jstring algor, jstring password) {
+
+jstring ret = NULL;
+char *outbuf = NULL;
+const char *alg = NULL;
+char *pass = NULL;
+EVP_PKEY_CTX *pctx = NULL, *kctx = NULL;
+EVP_PKEY *params = NULL, *key =NULL;
+const EVP_CIPHER *cipher = NULL;
+
+if (password != NULL) {
+	if (algor == NULL) {
+		printf("algor can not be null\n");
+		goto end;
+	}
+	if (!(alg = (*env)->GetStringUTFChars(env, algor, 0))) {
+		printf("algor error\n");
+		goto end;
+	}
+	if (!(pass = (char*)((*env)->GetStringUTFChars(env, password, 0)))) {
+		printf("password error\n");
+		goto end;
+	}
+	if (!(cipher = EVP_get_cipherbyname(alg))) {
+		printf("%s is not a supported cipher\n",alg);
+		goto end;
+	}
+}
+
+if (!(pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL))) {
+	printf("EVP_PKEY_CTX_new_id() error\n");
+	goto end;
+}
+
+if (EVP_PKEY_paramgen_init(pctx)!=1) {
+	printf("EVP_PKEY_paramgen_init() error\n");
+	goto end;
+}
+
+if (!EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_sm2p256v1)) {
+	printf("EVP_PKEY_CTX_set_ec_paramgen_curve_nid error\n");
+	goto end;
+}
+
+if (!EVP_PKEY_paramgen(pctx,&params)) {
+	printf("paramgen error\n");
+	goto end;
+}
+
+if (!(kctx = EVP_PKEY_CTX_new(params,NULL))) {
+	printf("ctx_new error\n");
+	goto end;
+}
+
+if ((EVP_PKEY_keygen_init(kctx))!=1) {
+	printf("EVP_PKEY_kengen_init() error\n");
+	goto end;
+}
+
+if (EVP_PKEY_keygen(kctx, &key) <=0) {
+	printf("EVP_PKEY_keygen error\n");
+	goto end;
+}
+
+BIO *bio = BIO_new(BIO_s_mem());
+if (!PEM_write_bio_PrivateKey(bio, key, cipher, NULL, 0, NULL, pass)) {
+	printf("Error writing key\n");
+	goto end;
+}
+
+BIO_get_mem_data(bio, &outbuf);
+
+if (!(ret = (*env)->NewStringUTF(env, outbuf))) {
+	printf("Error return jstring\n");
+	goto end;
+}
+
+end:
+if (alg) (*env)->ReleaseStringUTFChars(env, algor, alg);
+if (pass) (*env)->ReleaseStringUTFChars(env, password, pass);
+if (pctx) EVP_PKEY_CTX_free(pctx);
+if (kctx) EVP_PKEY_CTX_free(kctx);
+if (params) EVP_PKEY_free(params);
+if (key) EVP_PKEY_free(key);
+if (bio) BIO_free(bio);
+return ret;
+
+}
+
+
+
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getPEMPubKey(JNIEnv *env, jobject this, jstring pemPriKey, jstring password) {
+
+jstring ret = NULL;
+char *outbuf = NULL;
+const char *keybuf = NULL;
+char * pass = NULL;
+EVP_PKEY *pkey = NULL;
+
+if (!(keybuf = (*env)->GetStringUTFChars(env, pemPriKey, 0))) {
+    printf("get pemPrikey error\n");
+    goto end;
+}
+
+BIO *priKeyBio = NULL;
+
+priKeyBio = BIO_new_mem_buf(keybuf,-1);
+
+if (priKeyBio == NULL) {
+    printf("turn pemPrikey into BIO error\n");
+    goto end;
+}
+
+if(password != NULL) {
+    if (!(pass =(char*) (*env)->GetStringUTFChars(env, password, 0))) {
+        printf("get pemPrikey error\n");
+        goto end;
+    }
+}
+
+if (!(pkey = PEM_read_bio_PrivateKey(priKeyBio, NULL, NULL, pass))) {
+    printf("PEM_read_bio_PrivateKey error\n");
+    goto end;
+}
+
+BIO *pubKeyBio = BIO_new(BIO_s_mem());
+
+if(!PEM_write_bio_PUBKEY(pubKeyBio, pkey)) {
+    printf("pem_write_bio_pubkey error\n");
+    goto end;
+}
+
+BIO_get_mem_data(pubKeyBio, &outbuf);
+
+if (!(ret = (*env)->NewStringUTF(env, outbuf))) {
+    printf("Error return jstring\n");
+    goto end;
+}
+
+end:
+	
+if (pkey) EVP_PKEY_free(pkey);
+if (keybuf) (*env)->ReleaseStringUTFChars(env, pemPriKey, keybuf);
+if (pass) (*env)->ReleaseStringUTFChars(env, password, pass);
+if (priKeyBio) BIO_free(priKeyBio);
+if (pubKeyBio) BIO_free(pubKeyBio);
+return ret;
+
+}
+
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_transPriPemToByteArr(JNIEnv *env, jobject this, jstring pemKey,jstring password) {
+
+jbyteArray ret = NULL;
+const char *keybuf = NULL;
+char * pass = NULL;
+unsigned char *outbuf = NULL;
+EVP_PKEY *pkey =NULL;
+BIO *keyBio = NULL;
+
+if (pemKey == NULL) {
+    printf("pemKey can not be null\n");
+    goto end;
+}
+
+if (!(keybuf = (*env)->GetStringUTFChars(env, pemKey, 0))) {
+    printf("get pemKey error\n");
+    goto end;
+}
+keyBio = BIO_new_mem_buf(keybuf,-1);
+
+if (!(keyBio = BIO_new_mem_buf(keybuf,-1))) {
+    printf("turn key into BIO error\n");
+    goto end;
+}
+
+if (password != NULL) {
+    if (!(pass = (char *)(*env)->GetStringUTFChars(env, password, 0))) {
+        printf("get pass error\n");
+        goto end;
+    }
+}
+
+if (!(pkey = PEM_read_bio_PrivateKey(keyBio, NULL, NULL, pass))) {
+    printf("PEM_read_bio_PrivateKey() error\n");
+    goto end;
+}
+
+int outlen;
+if (!(outlen= i2d_PrivateKey(pkey,&outbuf))) {
+    printf("i2d_PrivateKey_bio() error\n");
+    goto end;
+}
+
+if (!(ret = (*env)->NewByteArray(env,outlen))) {
+    printf("return jbyteArray error\n");
+    goto end;
+}
+
+(*env)->SetByteArrayRegion(env, ret, 0, outlen, (jbyte *) outbuf);
+
+end:
+if (pkey) EVP_PKEY_free(pkey);
+if (keybuf) (*env)->ReleaseStringUTFChars(env, pemKey, keybuf);
+if (pass) (*env)->ReleaseStringUTFChars(env, password, pass);
+if (keyBio) BIO_free(keyBio);
+return ret;
+
+}
+
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_transPubPemToByteArr(JNIEnv *env, jobject this, jstring pemKey) {
+
+jbyteArray ret = NULL;
+const char *keybuf = NULL;
+char * pass = NULL;
+unsigned char *data = NULL;
+long len;
+
+if (pemKey == NULL) {
+    printf("pemKey can not be null\n");
+    goto end;
+}
+
+if (!(keybuf = (*env)->GetStringUTFChars(env, pemKey, 0))) {
+    printf("get pemKey error\n");
+    goto end;
+}
+
+BIO *keyBio = BIO_new_mem_buf(keybuf,-1);
+if (keyBio == NULL) {
+    printf("turn key into BIO error\n");
+    goto end;
+}
+
+if (!PEM_bytes_read_bio(&data, &len, NULL, PEM_STRING_PUBLIC, keyBio, NULL, pass)) {
+    printf("PEM_bytes_read_bio() error\n");
+    goto end;
+}
+
+if (!(ret = (*env)->NewByteArray(env,len))) {
+    printf("return jbyteArray error\n");
+    goto end;
+}
+
+(*env)->SetByteArrayRegion(env, ret, 0, len, (jbyte *) data);
+
+end:
+if (keybuf) (*env)->ReleaseStringUTFChars(env, pemKey, keybuf);
+if (keyBio) BIO_free(keyBio);
+return ret;
+
+}
+
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_setupSM9(JNIEnv* env, jobject this) {
+
+	jobjectArray ret = NULL;
+	
+	/* 公钥参数 */
+	SM9PublicParameters* mpk = NULL;
+	/* 主密钥参数 */
+	SM9MasterSecret* msk = NULL;
+
+	if (!SM9_setup(NID_sm9bn256v1, NID_sm9sign, NID_sm9hash1_with_sm3, &mpk, &msk)) {
+		printf("Error setup masker key\n");
+		goto end;
+	}
+	if (!(ret = (jobjectArray)(*env)->NewObjectArray(env, 1,
+		(*env)->FindClass(env, "java/lang/String"),
+		(*env)->NewStringUTF(env, "")))) {
+		JNIerr(JNI_F_JAVA_ORG_GMSSL_GMSSL_DERIVEKEY, JNI_R_JNI_MALLOC_FAILURE);
+		return NULL;
+	}
+
+	/* 1、pointPpub */
+	(*env)->SetObjectArrayElement(env, ret, 0,
+		(*env)->NewStringUTF(env, OPENSSL_buf2hexstr(ASN1_STRING_get0_data(msk->pointPpub),ASN1_STRING_length(msk->pointPpub))));
+
+
+
+
+end:
+	return ret;
+}
+
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getPEMSM9MasterKey(JNIEnv* env, jobject this, jstring password) {
+
+	jstring ret = NULL;
+	char* outbuf = NULL;
+	char* pass = NULL;
+	/* 公钥参数 */
+	SM9PublicParameters* mpk = NULL;
+	/* 主密钥参数 */
+	SM9MasterSecret* msk = NULL;
+
+	if (password != NULL) {
+		if (!(pass = (char*)(*env)->GetStringUTFChars(env, password, 0))) {
+			printf("input password error\n");
+			goto end;
+		}
+	}
+	if (!SM9_setup(NID_sm9bn256v1, NID_sm9sign, NID_sm9hash1_with_sm3, &mpk, &msk)) {
+		printf("Error setup masker key\n");
+		goto end;
+	}
+	BIO* out = BIO_new(BIO_s_mem());
+	PEM_write_bio_SM9MasterSecret(out, msk, EVP_sms4_cbc(), NULL, 0, NULL, pass);
+	BIO_get_mem_data(out, &outbuf);
+	if (!(ret = (*env)->NewStringUTF(env, outbuf))) {
+		printf("Error return jstring\n");
+		goto end;
+	}
+end:
+	if (pass) (*env)->ReleaseStringUTFChars(env, password, pass);
+	if (out) BIO_free(out);
 	return ret;
 }
