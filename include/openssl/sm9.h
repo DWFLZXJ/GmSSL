@@ -91,6 +91,7 @@ int SM9_setup(int pairing, /* NID_sm9bn256v1 */
 	SM9MasterSecret **msk);
 
 SM9MasterSecret *SM9_generate_master_secret(int pairing, int scheme, int hash1);
+SM9MasterSecret* SM9_generate_master_secretbyparam(int pairing, int scheme, int hash1, BIGNUM* mastersecret, char* pointPpub);
 SM9PublicParameters *SM9_extract_public_parameters(SM9MasterSecret *msk);
 SM9PrivateKey *SM9_extract_private_key(SM9MasterSecret *msk,
 	const char *id, size_t idlen);
