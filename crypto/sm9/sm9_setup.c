@@ -250,70 +250,44 @@ SM9MasterSecret* SM9_generate_master_secretbyparam(int pairing, int scheme, int 
 	}
 
 	/* set masterSecret --daiwf */
-	
-	/*	if (!(msk->masterSecret = mastersecret)) {
-			SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, ERR_R_MALLOC_FAILURE);
-			goto end;
-		}*/
-		
-	
-
-	/* generate master public point */
-	if (scheme == NID_sm9sign) {
-
-		/* Ppubs = k * P2 in E'(F_p^2) */
-		/*point_t Ppubs;
-
-		if (!point_init(&Ppubs, ctx)
-			|| !point_mul_generator(&Ppubs, msk->masterSecret, p, ctx)
-			|| !point_to_octets(&Ppubs, buf, ctx)) {
-			SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, SM9_R_TWIST_CURVE_ERROR);
-			point_cleanup(&Ppubs);
-			goto end;
-		}
-
-		len = 129;
-		point_cleanup(&Ppubs);*/
-
-	}
-	else if (scheme == NID_sm9keyagreement
-		|| scheme == NID_sm9encrypt) {
-
-		/* Ppube = k * P1 in E(F_p) */
-		EC_GROUP* group = NULL;
-		EC_POINT* Ppube = NULL;
-
-		if (!(group = EC_GROUP_new_by_curve_name(NID_sm9bn256v1))
-			|| !(Ppube = EC_POINT_new(group))
-			|| !EC_POINT_mul(group, Ppube, msk->masterSecret, NULL, NULL, ctx)
-			|| !(len = EC_POINT_point2oct(group, Ppube, point_form, buf, len, ctx))) {
-			SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, SM9_R_EC_LIB);
-			EC_GROUP_free(group);
-			EC_POINT_free(Ppube);
-			goto end;
-		}
-
-		EC_GROUP_free(group);
-		EC_POINT_free(Ppube);
-
-	}
-	else {
-		SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, SM9_R_INVALID_SCHEME);
-		goto end;
-	}
-	/* set masterSecret --daiwf */
 
 	if (!(msk->masterSecret = mastersecret)) {
 		SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, ERR_R_MALLOC_FAILURE);
 		goto end;
 	}
 
+	//if (scheme == NID_sm9keyagreement
+	//	|| scheme == NID_sm9encrypt) {
+
+	//	/* Ppube = k * P1 in E(F_p) */
+	//	EC_GROUP* group = NULL;
+	//	EC_POINT* Ppube = NULL;
+
+	//	if (!(group = EC_GROUP_new_by_curve_name(NID_sm9bn256v1))
+	//		|| !(Ppube = EC_POINT_new(group))
+	//		|| !EC_POINT_mul(group, Ppube, msk->masterSecret, NULL, NULL, ctx)
+	//		|| !(len = EC_POINT_point2oct(group, Ppube, point_form, buf, len, ctx))) {
+	//		SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, SM9_R_EC_LIB);
+	//		EC_GROUP_free(group);
+	//		EC_POINT_free(Ppube);
+	//		goto end;
+	//	}
+
+	//	EC_GROUP_free(group);
+	//	EC_POINT_free(Ppube);
+
+	//}
+	//else {
+	//	SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, SM9_R_INVALID_SCHEME);
+	//	goto end;
+	//}
+
 	if (!(msk->pointPpub = ASN1_OCTET_STRING_new())) {
 		SM9err(SM9_F_SM9_GENERATE_MASTER_SECRET, ERR_R_MALLOC_FAILURE);
 		goto end;
 	}
 
-	if (!ASN1_OCTET_STRING_set(msk->pointPpub, pointPpub, (int)len)) {
+	if (!ASN1_OCTET_STRING_set(msk->pointPpub, pointPpub, strlen(pointPpub))) {
 		ERR_print_errors_fp(stderr);
 		goto end;
 	}
