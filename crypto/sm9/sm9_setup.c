@@ -331,6 +331,36 @@ end:
 	return ret;
 }
 
+SM9PublicParameters* SM9_extract_public_parameters_byparam(char* pointPpub)
+{
+	SM9PublicParameters* ret = NULL;
+	SM9PublicParameters* mpk = NULL;
+
+	if (!(mpk = SM9PublicParameters_new())) {
+		SM9err(SM9_F_SM9_EXTRACT_PUBLIC_PARAMETERS, ERR_R_MALLOC_FAILURE);
+		return NULL;
+	}
+
+	if (!(mpk->pairing = OBJ_nid2obj(NID_sm9bn256v1))
+		|| !(mpk->scheme = OBJ_nid2obj(NID_sm9encrypt))
+		|| !(mpk->hash1 = OBJ_nid2obj(NID_sm9hash1_with_sm3))
+		) {
+		printf("set mpk error\n");
+		goto end;
+	}
+
+	if (!ASN1_OCTET_STRING_set(mpk->pointPpub, pointPpub, strlen(pointPpub))) {
+		printf("set pointPpub error\n");
+		goto end;
+	}
+	ret = mpk;
+	mpk = NULL;
+
+end:
+	SM9PublicParameters_free(mpk);
+	return ret;
+}
+
 int SM9_setup(int pairing, int scheme, int hash1,
 	SM9PublicParameters **pmpk, SM9MasterSecret **pmsk)
 {

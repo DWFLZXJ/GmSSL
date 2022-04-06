@@ -426,7 +426,6 @@ int main(int argc, char **argv)
 	char *id = "guanzhi1980@gmail.com";
 	unsigned char in[] = "message to be signed or encrypted";
 	int use_test_vector = 1;
-
 	RAND_seed(rnd_seed, sizeof(rnd_seed));
 
 #if SM9_TEST

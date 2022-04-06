@@ -2196,6 +2196,7 @@ end:
 
 
 JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getSM9PrivateKey(JNIEnv* env, jobject this,jstring masterSecret,jstring pointPpub,jstring id, jint scheme) {
+	
 
 	jobjectArray ret = NULL;
 
@@ -2262,19 +2263,98 @@ JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_getSM9PrivateKey(JNIEnv* env
 	/* 1、privatePoint */
 	(*env)->SetObjectArrayElement(env, ret, 0,
 		(*env)->NewStringUTF(env, OPENSSL_buf2hexstr(ASN1_STRING_get0_data(sk->privatePoint), ASN1_STRING_length(sk->privatePoint))));
-	/* 2、pointPpub */
+	/* 2、IDENTITY */
 	(*env)->SetObjectArrayElement(env, ret, 1,
-		(*env)->NewStringUTF(env, OPENSSL_buf2hexstr(ASN1_STRING_get0_data(msk->pointPpub), ASN1_STRING_length(sk->pointPpub))));
+		(*env)->NewStringUTF(env, OPENSSL_buf2hexstr(ASN1_STRING_get0_data(sk->identity), ASN1_STRING_length(sk->identity))));
+	
 	
 end:
-	if (pub) OPENSSL_free(pub);
-	if (p) OPENSSL_free(p);
-	if (chpointPpubchar) OPENSSL_free(chpointPpubchar);
-	if (ms) BN_free(ms);
+
+
 	if (chpointPpub) (*env)->ReleaseStringUTFChars(env, pointPpub, chpointPpub);
 	if (ks) (*env)->ReleaseStringUTFChars(env, masterSecret, ks);
 	if (ID_A) (*env)->ReleaseStringUTFChars(env, id, ID_A);
-	if (msk) SM9MasterSecret_free(msk);
-	if (sk)  SM9PrivateKey_free(sk);
+
 	return ret;
 }
+
+
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_SM9encrypt(JNIEnv* env, jobject this,  jstring pointPpub, jstring id, jstring in) {
+
+	jobjectArray ret = NULL;
+	SM9PublicParameters* mpk = NULL;
+	/* 主密钥参数 */
+	SM9MasterSecret* msk = NULL;
+	unsigned char cbuf[1024] = { 0 };
+	size_t clen;
+	const char* chpointPpub = NULL;
+	const char* chpointPpubchar = NULL;
+	unsigned char* incontent = NULL;
+
+	const char* myid = NULL;
+	long publen;
+	BIGNUM* ms = NULL;
+	printf("in Java_org_gmssl_GmSSL_SM9encrypt\n");
+	const char* ks = "0130E78459D78545CB54C587E02CF480CE0B66340F319F348A1D5B1F2DC5F4";
+	if (!BN_hex2bn(&ms, ks)) {
+		printf("Error masterSecret \n");
+		goto end;
+	}
+
+	if (!(chpointPpub = (*env)->GetStringUTFChars(env, pointPpub, 0))) {
+		printf("get chpointPpub error\n");
+		goto end;
+	}
+	printf("get chpointPpub%s\n", chpointPpub);
+	if (!(incontent = (*env)->GetStringUTFChars(env, in, 0))) {
+		printf("get incontent error\n");
+		goto end;
+	}
+
+	if (!(myid = (*env)->GetStringUTFChars(env, id, 0))) {
+		printf("get ID error\n");
+		goto end;
+	}
+	//首先构造 mpk
+	if (!(mpk = SM9PublicParameters_new())) {
+		printf("get mpk error\n");
+		goto end;
+	}
+	chpointPpubchar = OPENSSL_hexstr2buf(chpointPpub, &publen);
+
+    msk = SM9_generate_master_secretbyparam(NID_sm9bn256v1, NID_sm9encrypt, NID_sm9hash1_with_sm3, ms, chpointPpubchar);
+	
+	mpk=SM9_extract_public_parameters(msk);
+	printf("get incontent%s\n", incontent);
+	printf("get incontentlength%d\n", strlen(incontent));
+	if (!SM9_encrypt(NID_sm9encrypt_with_sm3_xor, incontent, strlen(incontent),
+		cbuf, &clen, mpk, myid, strlen(myid))) {
+		printf("SM9_encrypt  error\n");
+		goto end;
+	}
+	
+	if (!(ret = (jobjectArray)(*env)->NewObjectArray(env, 1,
+		(*env)->FindClass(env, "java/lang/String"),
+		(*env)->NewStringUTF(env, "")))) {
+		JNIerr(JNI_F_JAVA_ORG_GMSSL_GMSSL_DERIVEKEY, JNI_R_JNI_MALLOC_FAILURE);
+		return NULL;
+	}
+
+
+	(*env)->SetObjectArrayElement(env, ret, 0,
+		(*env)->NewStringUTF(env, OPENSSL_buf2hexstr(cbuf,clen)));
+
+end:
+	if (chpointPpub) (*env)->ReleaseStringUTFChars(env, pointPpub, chpointPpub);
+	if (myid) (*env)->ReleaseStringUTFChars(env, id, myid);
+	if (incontent) (*env)->ReleaseStringUTFChars(env, in, incontent);
+	
+	return ret;
+}
+
+
+
+
+
+
+

@@ -268,7 +268,7 @@ JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getPEMSM9MasterKey
 
 /*
  * Class:     org_gmssl_GmSSL
- * Method:    getPEMSM9MasterKey
+ * Method:    getPEMSM9PriKey
  * Signature: (Ljava/lang/String;)[B
  */
 JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getPEMSM9PriKey
@@ -276,11 +276,19 @@ JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getPEMSM9PriKey
 
 /*
  * Class:     org_gmssl_GmSSL
- * Method:    getPEMSM9MasterKey
+ * Method:    getPEMSM9PriKey
  * Signature: (Ljava/lang/String;)[B
  */
-JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_getSM9PrivateKey
-(JNIEnv*, jobject, jstring, jstring, jstring,jstring, jint);
+JNIEXPORT jbyteArray JNICALL Java_org_gmssl_GmSSL_getSM9PrivateKey
+(JNIEnv*, jobject, jstring, jstring, jstring,jint);
+
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    SM9encrypt
+ * Signature: (Ljava/lang/String;)[B
+ */
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_SM9encrypt
+(JNIEnv*, jobject, jstring, jstring, jstring);
 
 
 
