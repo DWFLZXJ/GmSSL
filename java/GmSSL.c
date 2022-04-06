@@ -2352,6 +2352,68 @@ end:
 	return ret;
 }
 
+JNIEXPORT jobjectArray JNICALL Java_org_gmssl_GmSSL_SM9decrypt(JNIEnv* env, jobject this, jstring identity, jstring privatePoint, jstring in) {
+
+	jobjectArray ret = NULL;
+	SM9PrivateKey* sk = NULL;
+	const char* incontent = NULL;
+	const char* incontentchar = NULL;
+	const char* inidentity = NULL;
+	const char* inidentitychar = NULL;
+	const char* inprivatePoint = NULL;
+	const char* inprivatePointchar = NULL;
+	unsigned char mbuf[1024] = { 0 };
+	size_t mlen;
+	long inlen,inprivatePointlen;
+
+
+	if (!(incontent = (*env)->GetStringUTFChars(env, in, 0))) {
+		printf("get incontent error\n");
+		goto end;
+	}
+	incontentchar = OPENSSL_hexstr2buf(incontent, &inlen);
+
+	if (!(inidentity = (*env)->GetStringUTFChars(env, identity, 0))) {
+		printf("get identity error\n");
+		goto end;
+	}
+	
+
+	if (!(inprivatePoint = (*env)->GetStringUTFChars(env, privatePoint, 0))) {
+		printf("get privatePoint error\n");
+		goto end;
+	}
+	inprivatePointchar = OPENSSL_hexstr2buf(inprivatePoint, &inprivatePointlen);
+
+	printf("get inidentity %s\n", inidentity);
+
+	sk = SM9_MASTER_KEY_extract_key_byparam(inidentity, inprivatePointchar);
+
+	if (!SM9_decrypt(NID_sm9encrypt_with_sm3_xor, incontentchar, strlen(incontentchar),
+		mbuf, &mlen, sk)) {
+		printf(" SM9_decrypt error\n");
+		goto end;
+	}
+
+	if (!(ret = (jobjectArray)(*env)->NewObjectArray(env, 1,
+		(*env)->FindClass(env, "java/lang/String"),
+		(*env)->NewStringUTF(env, "")))) {
+		JNIerr(JNI_F_JAVA_ORG_GMSSL_GMSSL_DERIVEKEY, JNI_R_JNI_MALLOC_FAILURE);
+		return NULL;
+	}
+
+	(*env)->SetObjectArrayElement(env, ret, 0,
+		(*env)->NewStringUTF(env, mbuf));
+
+end:
+	if (inidentity) (*env)->ReleaseStringUTFChars(env, identity, inidentity);
+	if (inprivatePoint) (*env)->ReleaseStringUTFChars(env, privatePoint, inprivatePoint);
+	if (incontent) (*env)->ReleaseStringUTFChars(env, in, incontent);
+	return ret;
+}
+
+
+
 
 
 

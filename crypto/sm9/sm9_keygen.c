@@ -313,6 +313,40 @@ end:
 	return ret;
 }
 
+
+SM9_KEY* SM9_MASTER_KEY_extract_key_byparam(const char* identity,
+	const char* privatePoint)
+{
+	SM9PrivateKey* ret = NULL;
+	SM9PrivateKey* sk = NULL;
+
+	/* malloc */
+	if (!(sk = SM9PrivateKey_new())) {
+		SM9err(SM9_F_SM9_MASTER_KEY_EXTRACT_KEY,
+			ERR_R_MALLOC_FAILURE);
+		goto end;
+	}
+	
+
+	if (!(sk->pairing = OBJ_nid2obj(NID_sm9bn256v1))
+		|| !(sk->scheme = OBJ_nid2obj(NID_sm9encrypt))
+		|| !(sk->hash1 = OBJ_nid2obj(NID_sm9hash1_with_sm3))
+		|| !(sk->identity = ASN1_OCTET_STRING_new())
+		|| !ASN1_OCTET_STRING_set(sk->identity, (unsigned char*)identity, strlen(identity))
+		|| !(sk->privatePoint = ASN1_OCTET_STRING_new())
+		|| !ASN1_OCTET_STRING_set(sk->privatePoint, privatePoint, strlen(privatePoint))) {
+		SM9err(SM9_F_SM9_MASTER_KEY_EXTRACT_KEY, ERR_R_ASN1_LIB);
+		goto end;
+	}
+	ret = sk;
+	sk = NULL;
+
+end:
+	SM9PrivateKey_free(sk);
+	
+	return ret;
+}
+
 SM9PublicKey *SM9_extract_public_key(SM9PublicParameters *master,
 	const char *id, size_t idlen)
 {

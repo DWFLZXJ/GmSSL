@@ -96,6 +96,8 @@ SM9PublicParameters *SM9_extract_public_parameters(SM9MasterSecret *msk);
 SM9PublicParameters* SM9_extract_public_parameters_byparam(char* pointPpub);
 SM9PrivateKey *SM9_extract_private_key(SM9MasterSecret *msk,
 	const char *id, size_t idlen);
+SM9_KEY* SM9_MASTER_KEY_extract_key_byparam(const char* identity,
+	const char* privatePoint);
 SM9PublicKey *SM9_extract_public_key(SM9PublicParameters *mpk,
 	const char *id, size_t idlen);
 

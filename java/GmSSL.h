@@ -291,6 +291,14 @@ JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_SM9encrypt
 (JNIEnv*, jobject, jstring, jstring, jstring);
 
 
+/*
+ * Class:     org_gmssl_GmSSL
+ * Method:    SM9encrypt
+ * Signature: (Ljava/lang/String;)[B
+ */
+JNIEXPORT jstring JNICALL Java_org_gmssl_GmSSL_SM9decrypt
+(JNIEnv*, jobject, jstring, jstring, jstring);
+
 
 #ifdef __cplusplus
 }
